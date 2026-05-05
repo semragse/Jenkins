@@ -11,10 +11,9 @@ pipeline {
         stage('Setup') {
             steps {
                 echo '📦 Installing dependencies...'
-                // Install Python dependencies
-                bat '''
-                    python --version
-                    pip install -r requirements.txt
+                sh '''
+                    python3 --version
+                    pip3 install --break-system-packages -r requirements.txt
                 '''
             }
         }
