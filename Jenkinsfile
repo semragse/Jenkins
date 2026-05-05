@@ -2,13 +2,18 @@ pipeline {
     agent any
     
     environment {
-        // Environment variables available to all stages
         PROJECT_NAME = 'ETL_Pipeline'
-        PYTHON_VERSION = 'python'
     }
     
     stages {
-        stage('Setup') {
+        stage('Checkout') {
+            steps {
+                echo '📂 Cloning from GitHub...'
+                checkout scm
+            }
+        }
+        
+        stage('Install Dependencies') {
             steps {
                 echo '📦 Installing dependencies...'
                 sh '''
@@ -21,23 +26,20 @@ pipeline {
         stage('Run ETL') {
             steps {
                 echo '🚀 Running ETL Pipeline...'
-                // Execute the ETL script
-                bat 'python etl.py'
+                sh 'python3 etl.py'
             }
         }
         
         stage('Run Tests') {
             steps {
                 echo '🧪 Running data quality tests...'
-                // Run test suite
-                bat 'python test_data.py'
+                sh 'python3 test_data.py'
             }
         }
         
         stage('Archive Results') {
             steps {
                 echo '📦 Archiving artifacts...'
-                // Archive the output files
                 archiveArtifacts artifacts: 'output/**/*', allowEmptyArchive: false
             }
         }
@@ -49,10 +51,6 @@ pipeline {
         }
         failure {
             echo '❌ Pipeline failed! Check logs above.'
-        }
-        always {
-            echo '🧹 Cleaning up workspace...'
-            // Clean up can be added here if needed
         }
     }
 }
